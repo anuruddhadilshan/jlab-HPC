@@ -7,6 +7,7 @@
 # Provakar Datta's script                                                   #
 # ---------                                                                 #
 # Sean Jeffas, sj9ry@virginia.edu CREATED 07-24-2023                        #
+# Jacob McMurtry, rby2vw@virginia.edu MODIFED 04-23-2026                    #
 # ---------                                                                 #
 # ** Do not tamper with this sticker! Log any updates to the script above.  #
 # ------------------------------------------------------------------------- #
@@ -18,14 +19,15 @@ source setenv.sh
 runs=$1       # run number 
 prefix=-1     # We will initialize the rest in a second
 run_on_ifarm=-1
+firstevent=-1
 nevents=-1
 maxsegments=-1
 segments_per_job=-1
 use_sbs_gems=             # 0 = no sbs gems, 1 = use sbs gems
 # Workflow name (Not relevant if run_on_ifarm = 1)
-workflowname=GEP_replay_singlerun
+workflowname=gep5_replay_nocorr_0423
 # Specify a directory on volatile to store replayed ROOT files
-outdirpath=/volatile/halla/sbs/mcjacob/GEP/Kin3
+outdirpath=/volatile/halla/sbs/mcjacob/GEP/Kin3/LH2/Apr23/nocorr
 
 
 type=0  # 1 = multi run from txt file, 0 = single run
@@ -42,10 +44,10 @@ elif [[ ! -d $SBS_REPLAY ]]; then
 fi
 
 #Description of how to run if the user puts in a wrong input
-if [ "$#" -ne 6 ] && [ "$#" -ne 3 ] && [ "$#" -ne 4 ] && [ "$#" -ne 7 ]; then
+if [ "$#" -ne 6 ] && [ "$#" -ne 3 ] && [ "$#" -ne 4 ] && [ "$#" -ne 7 ] && [ "$#" -ne 8 ]; then
     echo -e "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     echo -e "This script expects 2 options for inputs:\n"
-    echo -e "Option 1: sbs-replay-main.sh <runnum> <prefix> <nevents> <maxsegments> <segments_per_job> <run_on_ifarm> <use_sbs_gems (optional)>"
+    echo -e "Option 1: sbs-replay-main.sh <runnum> <prefix> <firstevent> <nevents> <maxsegments> <segments_per_job> <run_on_ifarm> <use_sbs_gems (optional)>"
     echo -e "<use_sbs_gems> is optional (off by default)\n"
     echo -e "or\n"
     echo -e "Option 2: sbs-replay-main.sh <runlist> <maxsegments> <segments_per_job> <use_sbs_gems (optional)>"
@@ -74,18 +76,19 @@ fi
 
 # If this is a single run replay then we do that
 if [ $type -eq 0 ]; then
-    if [ "$#" -ne 6 ] && [ "$#" -ne 7 ]; then
-	echo -e "!!!! Error, single run replay needs 6 or 7 arguments !!!!"
-	echo -e "sbs-replay-main.sh <runnum> <prefix> <nevents> <maxsegments> <segments_per_job> <run_on_ifarm> <use_sbs_gems (optional)>\n"
+    if [ "$#" -ne 7 ] && [ "$#" -ne 8 ]; then
+	echo -e "!!!! Error, single run replay needs 7 or 8 arguments !!!!"
+	echo -e "sbs-replay-main.sh <runnum> <prefix> <firstevent> <nevents> <maxsegments> <segments_per_job> <run_on_ifarm> <use_sbs_gems (optional)>\n"
 	exit
     fi
     #read in variables expected for a single run replay
     prefix=$2
-    nevents=$3
-    maxsegments=$4 
-    segments_per_job=$5 
-    run_on_ifarm=$6
-    use_sbs_gems=$7
+    firstevent=$3
+    nevents=$4
+    maxsegments=$5 
+    segments_per_job=$6 
+    run_on_ifarm=$7
+    use_sbs_gems=$8
 
     #if use_sbs_gems has no input assume it is 0 (not used)
     if [ -z "$use_sbs_gems" ]
@@ -105,6 +108,7 @@ elif [ $type -eq 1 ]; then   #Otherwise do a runlist replay
 	exit
     fi
     nevents=-1
+    firstevent=0
     maxsegments=$2 
     segments_per_job=$3 
     use_sbs_gems=$4
@@ -214,7 +218,7 @@ fi
 
 #if a single run then we do a single job
 if [ $type -eq 0 ]; then
-    $SCRIPT_DIR'/submit-sbs-jobs.sh' $runs $prefix $nevents $maxsegments $segments_per_job $use_sbs_gems $run_on_ifarm $outdirpath $workflowname $SCRIPT_DIR $ANALYZER $SBSOFFLINE $SBS_REPLAY $DATA_PATH $ANAVER $useJLABENV $JLABENV
+    $SCRIPT_DIR'/submit-sbs-jobs.sh' $runs $prefix $firstevent $nevents $maxsegments $segments_per_job $use_sbs_gems $run_on_ifarm $outdirpath $workflowname $SCRIPT_DIR $ANALYZER $SBSOFFLINE $SBS_REPLAY $DATA_PATH $ANAVER $useJLABENV $JLABENV
 fi
 
 
@@ -228,7 +232,7 @@ if [ $type -eq 1 ]; then
 	    line_num=$((line_num + 1))
 	    continue
 	fi
-	$SCRIPT_DIR'/submit-sbs-jobs.sh' $runs $prefix $nevents $maxsegments $segments_per_job $use_sbs_gems $run_on_ifarm $outdirpath $workflowname $SCRIPT_DIR $ANALYZER $SBSOFFLINE $SBS_REPLAY $DATA_PATH $ANAVER $useJLABENV $JLABENV
+	$SCRIPT_DIR'/submit-sbs-jobs.sh' $runs $prefix $firstevent $nevents $maxsegments $segments_per_job $use_sbs_gems $run_on_ifarm $outdirpath $workflowname $SCRIPT_DIR $ANALYZER $SBSOFFLINE $SBS_REPLAY $DATA_PATH $ANAVER $useJLABENV $JLABENV
     done < $runs
 fi
 

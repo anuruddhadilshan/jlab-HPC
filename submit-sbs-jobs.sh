@@ -13,21 +13,22 @@
 
 runnum=$1
 prefix=$2
-nevents=$3
-maxsegments=$4
-segments_per_job=$5
-use_sbs_gems=$6
-run_on_ifarm=$7
-outdirpath=$8
-workflowname=$9
-scriptdir=${10}
-analyzerenv=${11}
-sbsofflineenv=${12}
-sbsreplayenv=${13}
-datapath=${14}
-ANAVER=${15}     # Analyzer version
-useJLABENV=${16} # Use 12gev_env instead of modulefiles?
-JLABENV=${17}    # /site/12gev_phys/softenv.sh version
+nevents=$4
+firstevent=$3	# First event to replay (0 by default)
+maxsegments=$5
+segments_per_job=$6
+use_sbs_gems=$7
+run_on_ifarm=$8
+outdirpath=$9
+workflowname=${10}
+scriptdir=${11}
+analyzerenv=${12}
+sbsofflineenv=${13}
+sbsreplayenv=${14}
+datapath=${15}
+ANAVER=${16}     # Analyzer version
+useJLABENV=${17} # Use 12gev_env instead of modulefiles?
+JLABENV=${18}    # /site/12gev_phys/softenv.sh version
 
 #Set environments from inputs above
 export SCRIPT_DIR=$scriptdir
@@ -97,9 +98,11 @@ do
 	    	jobname=$prefix'_replay_'$runnum'_segment'$i'_stream'$j
 	    	echo 'Submitting job '$jobname' with '$nsegments' segments, runnum='$runnum
 
-	    	scriptrun=$script' '$j' '$j' '$runnum' '$nevents' 0 '$prefix' '$i' 1 '$use_sbs_gems' '$DATA_PATH' '$outdirpath' '$run_on_ifarm' '$ANALYZER' '$SBSOFFLINE' '$SBS_REPLAY' '$ANAVER' '$useJLABENV' '$JLAB
-	    	addjobcmd='add-job -workflow '$workflowname' -partition production -name '$jobname' -cores 1 -disk 25GB -ram 3000MB '$inputstring' '$scriptrun
+	    	scriptrun=$script' '$j' '$j' '$runnum' '$nevents' '$firstevent' '$prefix' '$i' 1 '$use_sbs_gems' '$DATA_PATH' '$outdirpath' '$run_on_ifarm' '$ANALYZER' '$SBSOFFLINE' '$SBS_REPLAY' '$ANAVER' '$useJLABENV' '$JLAB
+	    	#addjobcmd='add-job -workflow '$workflowname' -partition production -name '$jobname' -cores 1 -disk 25GB -ram 3000MB '$inputstring' '$scriptrun
+	    	addjobcmd='add-job -workflow '$workflowname' -partition production -name '$jobname' -cores 1 -disk-scratch 1GB -ram 3000MB -time 12h '$inputstring' '$scriptrun
 	    
+
 	    	if [[ $run_on_ifarm -ne 1 ]]; then
 	        	swif2 $addjobcmd
 			#echo $addjobcmd
@@ -123,10 +126,10 @@ do
 	    echo 'Submitting job '$jobname' with '$nsegments' segments, runnum='$runnum
 	    #echo 'Input string = '$inputstring
 	    
-	    scriptrun=$script' 2 0 '$runnum' '$nevents' 0 '$prefix' '$firstsegment' '$nsegments' '$use_sbs_gems' '$DATA_PATH' '$outdirpath' '$run_on_ifarm' '$ANALYZER' '$SBSOFFLINE' '$SBS_REPLAY' '$ANAVER' '$useJLABENV' '$JLABENV
+	    scriptrun=$script' 2 0 '$runnum' '$nevents' '$firstevent' '$prefix' '$firstsegment' '$nsegments' '$use_sbs_gems' '$DATA_PATH' '$outdirpath' '$run_on_ifarm' '$ANALYZER' '$SBSOFFLINE' '$SBS_REPLAY' '$ANAVER' '$useJLABENV' '$JLABENV
 	    #echo 'Script Run = '$scriptrun
-	    addjobcmd='add-job -workflow '$workflowname' -partition production -name '$jobname' -cores 1 -disk 25GB -ram 3000MB '$inputstring' '$scriptrun
-	    
+	    addjobcmd='add-job -workflow '$workflowname' -partition production -name '$jobname' -cores 1 -disk-scratch 1GB -ram 3000MB -time 12h '$inputstring' '$scriptrun
+	
 	    if [[ $run_on_ifarm -ne 1 ]]; then
 	        swif2 $addjobcmd
 		#echo $addjobcmd
@@ -144,8 +147,8 @@ do
 	    echo 'Submitting job '$jobname' with '$nsegments' segments, runnum = '$runnum
 #	    echo 'Input string = "'$inputstring'"'
 
-	    scriptrun=$script' 0 0 '$runnum' '$nevents' 0 '$prefix' '$firstsegment' '$nsegments' '$use_sbs_gems' '$DATA_PATH' '$outdirpath' '$run_on_ifarm' '$ANALYZER' '$SBSOFFLINE' '$SBS_REPLAY' '$ANAVER' '$useJLABENV' '$JLABENV
-	    addjobcmd='add-job -workflow '$workflowname' -partition production -name '$jobname' -cores 1 -disk 25GB -ram 3000MB '$inputstring' '$scriptrun
+	    scriptrun=$script' 0 0 '$runnum' '$nevents' '$firstevent' '$prefix' '$firstsegment' '$nsegments' '$use_sbs_gems' '$DATA_PATH' '$outdirpath' '$run_on_ifarm' '$ANALYZER' '$SBSOFFLINE' '$SBS_REPLAY' '$ANAVER' '$useJLABENV' '$JLABENV
+	    addjobcmd='add-job -workflow '$workflowname' -partition production -name '$jobname' -cores 1 -disk-scratch 1GB -ram 3000MB -time 12h '$inputstring' '$scriptrun
 
 	    if [[ $run_on_ifarm -ne 1 ]]; then
 	        swif2 $addjobcmd
