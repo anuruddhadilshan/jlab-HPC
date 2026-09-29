@@ -65,6 +65,13 @@ export DB_DIR=$SBS_REPLAY/DB_MC
 export OUT_DIR=$SWIF_JOB_WORK_DIR
 export DATA_DIR=$datadir
 
+# echoing for debugging
+echo " == Might help with debuggig == \n"
+echo -e "PATH= "$PATH "\n"
+echo -e "LD_LIBRARY_PATH= "$LD_LIBRARY_PATH "\n"
+echo -e "ROOTSYS= "$ROOTSYS "\n"
+echo -e "$(env | grep -i root) \n" 
+
 # handling any existing .rootrc file in the work directory
 # mainly necessary while running the jobs on ifarm
 if [[ -f .rootrc ]]; then

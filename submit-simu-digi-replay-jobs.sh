@@ -33,6 +33,23 @@ workflowname=
 # Working on a single directory is convenient & safe for the above mentioned
 # three processes to run smoothly.
 outdirpath=
+# -------------------------------------------------------------------------- #
+
+# ------ Variables to allocate time and memory for each type of jobs  ------ #
+# -------------------------------------------------------------------------- #
+# g4sbs jobs
+G4SBSJOBram='1500MB'
+G4SBSJOBdisk='5GB'
+G4SBSJOBtime='24h'
+# sbsdig jobs
+SBSDIGJOBram='1200MB'
+SBSDIGJOBdisk='100MB'
+SBSDIGJOBtime='6h'
+# replay jobs
+REPLAYJOBram='1200MB'
+REPLAYJOBdisk='1GB'
+REPLAYJOBtime='6h'
+# -------------------------------------------------------------------------- #
 
 # Sanity check 0: Checking the environments
 if [[ ! -d $SCRIPT_DIR ]]; then
@@ -136,7 +153,7 @@ do
     g4sbsscript=$SCRIPT_DIR'/run-g4sbs-simu.sh'' '$preinit' '$postscript' '$nevents' '$outfilebase' '$outdirpath' '$run_on_ifarm' '$G4SBS' '$ANAVER' '$useJLABENV' '$JLABENV
 
     if [[ $run_on_ifarm -ne 1 ]]; then
-	swif2 add-job -workflow $workflowname -partition production -name $g4sbsjobname -cores 1 -disk 5GB -ram 1500MB $g4sbsscript
+	swif2 add-job -workflow $workflowname -partition production -name $g4sbsjobname -cores 1 -disk $G4SBSJOBdisk -ram $G4SBSJOBram -time $G4SBSJOBtime $g4sbsscript
     else
 	$g4sbsscript
     fi
@@ -152,7 +169,7 @@ do
 	$aggsumscript $aggsuminfile '1' $aggsumoutfile $SCRIPT_DIR
     fi
     if [[ $run_on_ifarm -ne 1 ]]; then
-	swif2 add-job -workflow $workflowname -antecedent $g4sbsjobname -partition production -name $aggsumjobname -cores 1 -disk 1GB -ram 150MB $aggsumscript $aggsuminfile '0' $aggsumoutfile $SCRIPT_DIR
+	swif2 add-job -workflow $workflowname -antecedent $g4sbsjobname -partition production -name $aggsumjobname -cores 1 -disk 1GB -ram 150MB -time 1h $aggsumscript $aggsuminfile '0' $aggsumoutfile $SCRIPT_DIR
     else
 	$aggsumscript $aggsuminfile '0' $aggsumoutfile $SCRIPT_DIR
     fi
@@ -165,7 +182,7 @@ do
     sbsdigscript=$SCRIPT_DIR'/run-sbsdig.sh'' '$txtfile' '$sbsdiginfile' '$gemconfig' '$sbsconfig' '$run_on_ifarm' '$G4SBS' '$LIBSBSDIG' '$ANAVER' '$useJLABENV' '$JLABENV
     
     if [[ $run_on_ifarm -ne 1 ]]; then
-	swif2 add-job -workflow $workflowname -antecedent $g4sbsjobname -partition production -name $sbsdigjobname -cores 1 -disk 5GB -ram 1500MB $sbsdigscript
+	swif2 add-job -workflow $workflowname -antecedent $g4sbsjobname -partition production -name $sbsdigjobname -cores 1 -disk $SBSDIGJOBdisk -ram $SBSDIGJOBram -time $SBSDIGJOBtime $sbsdigscript
     else
 	$sbsdigscript
     fi
@@ -177,7 +194,7 @@ do
     digireplayscript=$SCRIPT_DIR'/run-digi-replay.sh'' '$digireplayinfile' '$sbsconfig' '-1' '$outdirpath' '$run_on_ifarm' '$ANALYZER' '$SBSOFFLINE' '$SBS_REPLAY' '$ANAVER' '$useJLABENV' '$JLABENV
     
     if [[ $run_on_ifarm -ne 1 ]]; then
-	swif2 add-job -workflow $workflowname -antecedent $sbsdigjobname -partition production -name $digireplayjobname -cores 1 -disk 5GB -ram 1500MB $digireplayscript
+	swif2 add-job -workflow $workflowname -antecedent $sbsdigjobname -partition production -name $digireplayjobname -cores 1 -disk $REPLAYJOBdisk -ram $REPLAYJOBram -time $REPLAYJOBtime $digireplayscript
     else
 	$digireplayscript
     fi
