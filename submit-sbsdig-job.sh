@@ -19,8 +19,18 @@ sbsconfig=$3    # GEM config (Valid options: 8,10,12)
 fjobid=$4       # first job id
 njobs=$5        # total no. of jobs to submit 
 run_on_ifarm=$6 # 1=>Yes (If true, runs all jobs on ifarm)
+do_backg=$7  # if '1', then beam-background will be added during the digitization.
+beambackg_root_file=$8 # location of the 'analyzed' (containing background histograms) background ROOT file w/ absolute path.
+beambackg_nevents=$9   # The number of simulated beam-background events used to create above ROOT file in input 12. #10,000,000,000
+backgscale_beamcurr=${10} # The assumed beam current in *Amperes*, to scale the background put on the simulated data accordingly.
+
+if [ -z "$do_backg" ] # default to not doing background if not specified.
+then
+    do_backg=0 
+fi
+
 # workflow name
-workflowname=
+workflowname=sim_digi
 
 # Checking the environments
 if [[ ! -d $SCRIPT_DIR ]]; then
@@ -30,9 +40,11 @@ elif [[ ! -d $LIBSBSDIG ]]; then
 fi
 
 # Validating the number of arguments provided
-if [[ "$#" -ne 6 ]]; then
+if [[ "$#" -ne 6 && "$#" -ne 10 ]]; then
     echo -e "\n--!--\n Illegal number of arguments!!"
-    echo -e " This script expects 6 arguments: <g4sbsfilebase> <g4sbsfiledir> <gemconfig> <fjobid> <njobs> <run_on_ifarm>\n"
+    echo -e " This script expects either 6 or 10 arguments: \n"
+    echo -e "For no background digitization: <g4sbsfilebase> <g4sbsfiledir> <gemconfig> <fjobid> <njobs> <run_on_ifarm>\n"
+    echo -e "For with background digitization: <g4sbsfilebase> <g4sbsfiledir> <gemconfig> <fjobid> <njobs> <run_on_ifarm> <do_backg> <beambackg_root_file> <beambackg_nevents> <backgscale_beamcurr>\n"
     exit;
 else 
     if [[ $run_on_ifarm -ne 1 ]]; then
@@ -81,6 +93,14 @@ else
     exit;
 fi
 
+#make sure if doing background, the beam-background ROOT file exists.
+if [[ $do_backg -eq 1 ]]; then
+    if [ ! -f $beambackg_root_file ]; then
+        echo -e "ERROR!! The entered beam-background ROOT file does not exists."
+        exit;
+    fi
+fi
+
 # creating jobs
 for ((i=$fjobid; i<$((fjobid+njobs)); i++))
 do
@@ -88,8 +108,12 @@ do
     sbsdigjobname=$g4sbsfilebase'_digi_job_'$i
     sbsdiginfile=$g4sbsfiledir'/'$g4sbsfilebase'_job_'$i'.root'
 
-    sbsdigscript=$SCRIPT_DIR'/run-sbsdig.sh'' '$txtfile' '$sbsdiginfile' '$gemconfig' '$sbsconfig' '$run_on_ifarm' '$G4SBS' '$LIBSBSDIG' '$ANAVER' '$useJLABENV' '$JLABENV
+    sbsdigscript="$SCRIPT_DIR/run-sbsdig.sh $txtfile $sbsdiginfile $gemconfig $sbsconfig $run_on_ifarm $G4SBS $LIBSBSDIG $ANAVER $useJLABENV $JLABENV"
 
+    if [[ $do_backg -eq 1 ]]; then
+        sbsdigscript="$SCRIPT_DIR/run-sbsdig.sh $txtfile $sbsdiginfile $gemconfig $sbsconfig $run_on_ifarm $G4SBS $LIBSBSDIG $ANAVER $useJLABENV $JLABENV $do_backg $beambackg_root_file $beambackg_nevents $backgscale_beamcurr"	
+    fi
+    
     if [[ $run_on_ifarm -ne 1 ]]; then
 	swif2 add-job -workflow $workflowname -partition production -name $sbsdigjobname -cores 1 -disk 5GB -ram 1500MB $sbsdigscript
     else

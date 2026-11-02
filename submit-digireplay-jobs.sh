@@ -19,7 +19,7 @@ fjobid=$5     # first job id
 njobs=$6      # total no. of jobs to submit
 run_on_ifarm=$7
 # workflow name
-workflowname=
+workflowname=gep_sim_replay
 
 # Checking the environments
 if [[ ! -d $SCRIPT_DIR ]]; then
@@ -73,7 +73,7 @@ do
     digireplayscript=$SCRIPT_DIR'/run-digi-replay.sh'' '$digireplayinfile' '$sbsconfig' '$nevents' '$outdirpath' '$run_on_ifarm' '$ANALYZER' '$SBSOFFLINE' '$SBS_REPLAY' '$ANAVER' '$useJLABENV' '$JLABENV
     
     if [[ $run_on_ifarm -ne 1 ]]; then
-	swif2 add-job -workflow $workflowname -partition production -name $digireplayjobname -cores 1 -disk 5GB -ram 1500MB $digireplayscript
+	swif2 add-job -workflow $workflowname -partition production -name $digireplayjobname -cores 1 -disk 100GB -ram 5GB -time 24h $digireplayscript
     else
 	$digireplayscript
     fi

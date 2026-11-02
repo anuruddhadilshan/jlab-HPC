@@ -94,8 +94,8 @@ then
     analyzer -b -q 'replay_gep_mc.C+("'$inputfile'",'$config','$maxevents')'    
 fi
 
-# move output files
-mv $OUT_DIR'/replayed_'$inputfile'.root' $DATA_DIR
+# move output files (modified by ADR to accomodate the mv of multiple ROOT file outputs from PODD for large replays.
+mv "${OUT_DIR}/replayed_${inputfile}"*.root "${DATA_DIR}"
 mv $OUT_DIR'/replayed_'$inputfile'.log' $DATA_DIR
 
 # clean up the work directory

@@ -8,11 +8,11 @@
 #****************************************** # 
 
 # Static
-export HPC_REPO=
+export HPC_REPO=/w/halla-scshelf2102/sbs/adr/JLab-HPC_pdbforce/jlab-HPC
 #
 
-export G4SBS_REPO=
-export SIMC_REPO=
-export LIBSBSDIG_REPO=
-export SBSOFFLINE_REPO=
-export SBS_REPLAY_REPO=
+export G4SBS_REPO=/work/halla/sbs/adr/g4sbs/install/../g4sbs
+export SIMC_REPO=/Path/to/simc_gfortran/repository/../simc_gfortran
+export LIBSBSDIG_REPO=/work/halla/sbs/adr/libsbsdig/install//../libsbsdig
+export SBSOFFLINE_REPO=/w/halla-scshelf2102/sbs/adr/SBS-offline/install/../SBS-offline
+export SBS_REPLAY_REPO=/w/halla-scshelf2102/sbs/adr/SBS-replay/../SBS-replay

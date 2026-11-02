@@ -21,8 +21,8 @@ nevents=$2      # No. of events to generate per job
 fjobid=$3       # first job id
 njobs=$4        # total no. of jobs to submit 
 run_on_ifarm=$5 # 1=>Yes (If true, runs all jobs on ifarm)
-workflowname=
-outdirpath=
+workflowname=gep_G4SBS
+outdirpath=/lustre24/expphy/volatile/halla/sbs/adr/gep-sim/GEP3_mod/elastics_g4sbsout
 
 # Validating the number of arguments provided
 if [[ "$#" -ne 5 ]]; then

@@ -22,7 +22,16 @@ g4sbsenv=$6
 libsbsdigenv=$7
 ANAVER=$8      # Analyzer version
 useJLABENV=$9  # Use 12gev_env instead of modulefiles?
-JLABENV=$10     # /site/12gev_phys/softenv.sh version
+JLABENV=${10}     # /site/12gev_phys/softenv.sh version
+do_backg=${11}  # if '1', then beam-background will be added during the digitization.
+beambackg_root_file=${12} # location of the 'analyzed' (containing background histograms) background ROOT file w/ absolute path.
+beambackg_nevents=${13}   # The number of simulated beam-background events used to create above ROOT file in input 12.
+backgscale_beamcurr=${14} # The assumed beam current in *Amperes*, to scale the background put on the simulated data accordingly.
+
+if [ -z "$do_backg" ] # default to not doing background if not specified.
+then
+    do_backg=0 
+fi
 
 # paths to necessary libraries (ONLY User specific part) ---- #
 export G4SBS=$g4sbsenv
@@ -78,6 +87,20 @@ fi
 
 # creating input text file
 echo $infilename >>$txtfile
+echo 'endlist' >>$txtfile
+
+# if background is going to be included, 
+if [[ $do_backg -eq 1 ]]; then
+    if [ -f "$beambackg_root_file" ]; then #This check is redundant as it is already supposed to be checked by up-stream 'submit' scripts but let's do it anyway.
+        echo "$beambackg_root_file $beambackg_nevents $backgscale_beamcurr" >>$txtfile
+        echo 'end_bkgdinfo' >>$txtfile	
+    else
+        echo -e "[run-sbsdig.sh] EROOR!! The entered beam-background ROOT file does not exists."
+        exit;
+    fi
+else
+    echo "No backg added!"
+fi
 
 # run the sbsdig command
 sbsdig $dbfile $txtfile

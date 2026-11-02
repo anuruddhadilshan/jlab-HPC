@@ -32,22 +32,22 @@ JLABENV='2.6'   # /site/12gev_phys/softenv.sh version
 # ********************************************** # 
 
 # Required by all
-export SCRIPT_DIR=/Path/to/jlab-HPC/repository
+export SCRIPT_DIR=/w/halla-scshelf2102/sbs/adr/JLab-HPC_pdbforce/jlab-HPC
 
 # Required by the scripts running G4SBS or LIBSBSDIG jobs
-export G4SBS=/Path/to/G4SBS/install/directory
+export G4SBS=/work/halla/sbs/adr/g4sbs/install
 
 # Required by the scripts running SIMC (simc_gfortran) jobs
 export SIMC=/Path/to/simc_gfortran/repository
 
 # Required by the scripts running digitization jobs using sbsdig
-export LIBSBSDIG=/Path/to/libsbsdig/install/directory
+export LIBSBSDIG=/work/halla/sbs/adr/libsbsdig/install/
 
 # Required by the scripts running replay (data or MC) jobs
 # $ANALYZER not needed while using modulefiles (See above)
 export ANALYZER=/Path/to/analyzer/install/directory
-export SBSOFFLINE=/Path/to/SBS-offline/install/directory
-export SBS_REPLAY=/Path/to/SBS-replay/repository
+export SBSOFFLINE=/w/halla-scshelf2102/sbs/adr/SBS-offline/install
+export SBS_REPLAY=/w/halla-scshelf2102/sbs/adr/SBS-replay
 
 # Path to data directories (NOT User Specific)
 # The path is written this way below becauses strings will need

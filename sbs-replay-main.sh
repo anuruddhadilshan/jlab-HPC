@@ -15,6 +15,7 @@
 # Setting necessary environments via setenv.sh
 source setenv.sh
 
+
 # List of arguments
 runs=$1       # run number 
 prefix=-1     # We will initialize the rest in a second
@@ -25,9 +26,9 @@ maxsegments=-1
 segments_per_job=-1
 use_sbs_gems=             # 0 = no sbs gems, 1 = use sbs gems
 # Workflow name (Not relevant if run_on_ifarm = 1)
-workflowname=gep5_replay_nocorr_0423
+workflowname=gep_replay
 # Specify a directory on volatile to store replayed ROOT files
-outdirpath=/volatile/halla/sbs/mcjacob/GEP/Kin3/LH2/Apr23/nocorr
+outdirpath=/lustre24/expphy/volatile/halla/sbs/adr/gep_replayed/GEP3/ml-hit-finding/multfoil_optics_FastDilated_10_11_2026
 
 
 type=0  # 1 = multi run from txt file, 0 = single run
@@ -43,6 +44,7 @@ elif [[ ! -d $SBS_REPLAY ]]; then
     echo -e '\nERROR!! Please set "SBS_REPLAY" path properly in setenv.sh script!\n'; exit;
 fi
 
+
 #Description of how to run if the user puts in a wrong input
 if [ "$#" -ne 6 ] && [ "$#" -ne 3 ] && [ "$#" -ne 4 ] && [ "$#" -ne 7 ] && [ "$#" -ne 8 ]; then
     echo -e "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -53,7 +55,7 @@ if [ "$#" -ne 6 ] && [ "$#" -ne 3 ] && [ "$#" -ne 4 ] && [ "$#" -ne 7 ] && [ "$#
     echo -e "Option 2: sbs-replay-main.sh <runlist> <maxsegments> <segments_per_job> <use_sbs_gems (optional)>"
     echo -e "<use_sbs_gems> is optional (off by default)\n"
     echo -e "For option 2 the runlist text file must have the following form:"
-    echo -e "<prefix>"
+    echo -e "<prefix>"  
     echo -e "<output_dir_name>"
     echo -e "<workflow_name>"
     echo -e "runnum1"
@@ -232,7 +234,12 @@ if [ $type -eq 1 ]; then
 	    line_num=$((line_num + 1))
 	    continue
 	fi
+<<<<<<< HEAD
 	$SCRIPT_DIR'/submit-sbs-jobs.sh' $runs $prefix $firstevent $nevents $maxsegments $segments_per_job $use_sbs_gems $run_on_ifarm $outdirpath $workflowname $SCRIPT_DIR $ANALYZER $SBSOFFLINE $SBS_REPLAY $DATA_PATH $ANAVER $useJLABENV $JLABENV
+=======
+    echo "Run No: "$runs 
+	$SCRIPT_DIR'/submit-sbs-jobs.sh' $runs $prefix $nevents $maxsegments $segments_per_job $use_sbs_gems $run_on_ifarm $outdirpath $workflowname $SCRIPT_DIR $ANALYZER $SBSOFFLINE $SBS_REPLAY $DATA_PATH $ANAVER $useJLABENV $JLABENV
+>>>>>>> 09d66e1 (Committing recent changes)
     done < $runs
 fi
 
