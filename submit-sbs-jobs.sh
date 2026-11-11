@@ -48,7 +48,7 @@ nstreams=0
 # look for first segment of first stream on cache disk:
 firstsegname=$prefix'_'$runnum'.evio.0.0'
 mssfirst='mss:/mss/'$DATA_PATH/$firstsegname
-cachefirst='/cache/mss/'$DATA_PATH/$firstsegname
+cachefirst='/cache/'$DATA_PATH/$firstsegname
 
 script=$SCRIPT_DIR'/run-sbs-replay.sh'
 
@@ -72,7 +72,7 @@ do
     do 
 	eviofilename=$prefix'_'$runnum'.evio.'$j'.'$i
 	mssfilename='mss:/mss/'$DATA_PATH/$eviofilename
-	cachefile='/cache/mss/'$DATA_PATH/$eviofilename
+	cachefile='/cache/'$DATA_PATH/$eviofilename
 
 	testfilename='/mss/'$DATA_PATH/$eviofilename
 
